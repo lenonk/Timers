@@ -8,6 +8,7 @@ It is completely configurable allowing the user to customize colors, sizes, whet
 - Icons for the recast panel are currently unimplemented, and may never be implemented.  It really depends on whether I can find or create an icon pack that I like.
 - This is beta software.  There will be bugs and unimplemented abilities.  I am unable to test every ability and spell for every job.  If you find something that isn't working as it should be, please report it via the issue tracker.
 
+### Screenshots:
 - Each panel is indvidually configurable
 
 ![](https://user-images.githubusercontent.com/1181733/151686047-984cbf9d-1d53-4c1c-bf36-5d8cca8cdd42.png)
