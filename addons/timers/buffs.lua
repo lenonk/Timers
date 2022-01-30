@@ -504,9 +504,6 @@ end
 function HandleBuffUpdate()
     local p_server_id = AshitaCore:GetMemoryManager():GetParty():GetMemberServerId(0)
 
-    -- Add timers for active buffs that we don't have timers for
-    --SyncBuffs()
-
     if not p_server_id or not buffs.buffs[p_server_id] then return end
 
     -- Remove timers for buffs we no longer have
@@ -576,9 +573,23 @@ end
 
 local function UpdateBuffs(timers)
     local bars = T{}
+    local party_sids = T{}
+    local mManager = AshitaCore:GetMemoryManager()
+    local mmParty = mManager:GetParty()
+
+    for i = 1, mmParty:GetAlliancePartyMemberCount1() do
+        local s_id = mmParty:GetMemberServerId(i - 1)
+        table.insert(party_sids, s_id)
+    end
+
     for p_id, data in pairs(buffs.buffs) do
         for id, effect in pairs(data.effects) do
             for k, v in pairs(effect) do
+                if (mManager:GetPlayer():GetIsZoning() == 0) and not party_sids:hasval(v.target_id) then
+                    buffs.buffs[p_id].effects[id][k] = nil
+                    goto continue
+                end
+
                 local t_entity = GetEntity(v.t_index)
                 local a_entity = GetEntity(v.a_index)
 
@@ -596,6 +607,7 @@ local function UpdateBuffs(timers)
                 end
             end
         end
+        ::continue::
     end
 
     timers:render(bars)
