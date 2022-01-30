@@ -43,7 +43,7 @@ local BlockedSpells = T{
 }
 
 local BlockedBuffs = T{
-    0,1
+    0,1,603,627
 }
 
 local AbilityMsgs = T{
@@ -220,6 +220,11 @@ local function InsertBuff(actor, target, effect, name, duration, replace, time)
 
     if (not target or target == 0) or (not actor or actor == 0) then return end
 
+    if not effect or effect == 0 or BlockedBuffs:hasval(effect) then return end
+
+    local target_index = GetTargetIndex(target)
+    if not target_index then return end
+
     if not buffs.buffs[target] then
         buffs.buffs[target] = T{}
         buffs.buffs[target].effects = T{}
@@ -228,10 +233,6 @@ local function InsertBuff(actor, target, effect, name, duration, replace, time)
     if not buffs.buffs[target].effects[effect] then
         buffs.buffs[target].effects[effect] = T{}
     end
-
-    local target_index = GetTargetIndex(target)
-
-    if not target_index then return end
 
     local t = buffs.buffs[target].effects[effect]
     if replace or not MultipleAllowed:hasval(effect) then
@@ -397,7 +398,6 @@ local function HandleAction(act)
     if not BlockedSpells:hasval(spell) and (AbilityMsgs:haskey(message) or SpellMsgs:haskey(message)) then
         --print(('%d, %d, %d, %d, %d'):fmt(message, spell, type, effect, param))
         param = (GetEffectOverride(spell) or param)
-        if not param or BlockedBuffs:hasval(param) then return end
 
         ApplyBuff(target, param, spell, actor, type)
     else
