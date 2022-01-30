@@ -19,7 +19,7 @@
 
 addon.name      = 'Timers';
 addon.author    = 'The Mystic';
-addon.version   = '1.0';
+addon.version   = '1.0.1';
 addon.desc      = 'Displays the duration of spells and abilities you\'ve used';
 addon.link      = 'https://github.com/lenonk/Timers';
 

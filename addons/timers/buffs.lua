@@ -505,7 +505,7 @@ function HandleBuffUpdate()
     local p_server_id = AshitaCore:GetMemoryManager():GetParty():GetMemberServerId(0)
 
     -- Add timers for active buffs that we don't have timers for
-    SyncBuffs()
+    --SyncBuffs()
 
     if not p_server_id or not buffs.buffs[p_server_id] then return end
 
