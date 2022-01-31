@@ -237,10 +237,10 @@ local function InsertBuff(actor, target, effect, name, duration, replace, time)
     local t = buffs.buffs[target].effects[effect]
     if replace or not MultipleAllowed:hasval(effect) then
         t[1] = T{ name=name, o_time=o_time, duration=duration, target_id=target,
-                  a_index=GetTargetIndex(actor), t_index=target_index }
+                  a_index=GetTargetIndex(actor), t_index=target_index, ttl=-1 }
     else
         table.insert(t, T{ name=name, o_time=o_time, duration=duration, target_id=target,
-                           a_index=GetTargetIndex(actor), t_index=target_index })
+                           a_index=GetTargetIndex(actor), t_index=target_index, ttl=-1 })
     end
 end
 
@@ -573,23 +573,10 @@ end
 
 local function UpdateBuffs(timers)
     local bars = T{}
-    local party_sids = T{}
-    local mManager = AshitaCore:GetMemoryManager()
-    local mmParty = mManager:GetParty()
-
-    for i = 1, mmParty:GetAlliancePartyMemberCount1() do
-        local s_id = mmParty:GetMemberServerId(i - 1)
-        table.insert(party_sids, s_id)
-    end
 
     for p_id, data in pairs(buffs.buffs) do
         for id, effect in pairs(data.effects) do
             for k, v in pairs(effect) do
-                if (mManager:GetPlayer():GetIsZoning() == 0) and not party_sids:hasval(v.target_id) then
-                    buffs.buffs[p_id].effects[id][k] = nil
-                    goto continue
-                end
-
                 local t_entity = GetEntity(v.t_index)
                 local a_entity = GetEntity(v.a_index)
 
@@ -602,12 +589,21 @@ local function UpdateBuffs(timers)
                 if v.duration == -1 and diff > 120 then -- 2 seconds
                     buffs.buffs[p_id].effects[id][k] = nil
                 else
-                    local remains = v.duration - diff
-                    table.insert(bars, { name=timer_name, duration=v.duration, remains=remains, key=v.t_index .. id, icon_id=id })
+                    local e = AshitaCore:GetMemoryManager():GetEntity()
+                    if bit.band(e:GetRenderFlags0(v.t_index), 0x200) == 0x200 then
+                        v.ttl = -1
+                        local remains = v.duration - diff
+                        table.insert(bars, { name=timer_name, duration=v.duration, remains=remains,
+                                             key=v.t_index .. id, icon_id=id })
+                    else
+                        if v.ttl == -1 then v.ttl = ashita.time.clock()['s'] end
+                        if ashita.time.clock()['s'] - v.ttl > 600 then
+                            buffs.buffs[p_id].effects[id][k] = nil
+                        end
+                    end
                 end
             end
         end
-        ::continue::
     end
 
     timers:render(bars)
