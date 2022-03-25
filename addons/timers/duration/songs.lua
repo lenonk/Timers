@@ -294,7 +294,6 @@ local function CalculateBuffSongDuration(multiplier, targetId)
     multiplier = AddConditionalInstruments(multiplier);
     if (gData.GetMainJob() == 10) and (gData.GetMainJobLevel() == 99) then
         local total = gData.GetJobPointTotal(10);
-        print('total jp: ' .. total);
         if (gData.GetJobPointTotal(10) >= 1200) then
             multiplier = multiplier + 0.05;
         end

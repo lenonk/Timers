@@ -45,7 +45,7 @@ local function InitializeMerits()
     if (ptr == 0) then
         return;
     end
-    ptr = ptr + 0x28A44;
+    ptr = ptr + 0x2CFF4;
     local count = ashita.memory.read_uint16(ptr + 2);
     local meritptr = ashita.memory.read_uint32(ptr + 4);
     if (count > 0) then
