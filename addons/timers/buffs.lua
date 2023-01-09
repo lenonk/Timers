@@ -383,6 +383,10 @@ local function HandleAction(act)
 
     if not party then return end
 
+    if not act then return end
+    if not act.targets[1] then return end
+    if not act.targets[1].actions[1] then return end
+    if not act.targets[1].actions[1].message then return end
     local message = act.targets[1].actions[1].message
 
     local serverId = party:GetMemberServerId(0)
@@ -582,7 +586,9 @@ local function UpdateBuffs(timers)
 
                 local timer_name = v.name
                 if (t_entity and t_entity.ServerId) ~= (a_entity and a_entity.ServerId) then
-                    timer_name = ("%s (%s)"):fmt(v.name, t_entity.Name)
+                    local entity_name = "Unknown"
+                    if (t_entity and t_entity.Name) then entity_name = t_entity.Name end
+                    timer_name = ("%s (%s)"):fmt(v.name, entity_name)
                 end
 
                 local diff = ((ashita.time.clock()['ms'] - v.o_time) / 1000.0) * 60.0
